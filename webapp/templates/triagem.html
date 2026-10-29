@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% import "macros.html" as m with context %}
+{% block corpo %}
+{{ m.placar_bar(placar) }}
+
+<form class="filtros" method="get">
+  <select name="f" onchange="this.form.submit()">
+    {% for k, v in FILTROS.items() %}<option value="{{ k }}" {{ "selected" if f == k }}>{{ v }}</option>{% endfor %}
+  </select>
+  <select name="sug" onchange="this.form.submit()" title="Filtrar pela cesta sugerida">
+    <option value="">qualquer sugestão</option>
+    {% for c in CESTAS %}<option value="{{ c }}" {{ "selected" if sug == c }}>sugestão: {{ LABEL[c] }}</option>{% endfor %}
+    <option value="nenhuma" {{ "selected" if sug == "nenhuma" }}>sem sugestão</option>
+  </select>
+  <select name="ordem" onchange="this.form.submit()">
+    {% for k, v in ORDENS.items() %}<option value="{{ k }}" {{ "selected" if ordem == k }}>{{ v }}</option>{% endfor %}
+  </select>
+  <input type="search" name="q" value="{{ q }}" placeholder="buscar em título, abstract, keywords, venue">
+  <button>Filtrar</button>
+  <span class="muted small">{{ total }} artigo(s)</span>
+</form>
+
+{% if vazio %}
+<div class="card"><p>Corpus vazio. Vá em <a href="{{ url_for('aba_projeto', pid=proj.id) }}">Projeto</a> para buscar no OpenAlex ou enviar .bib.</p></div>
+{% elif not paper %}
+<div class="card"><p>Nenhum artigo neste filtro. {% if f == "pendentes" %}🎉 Triagem concluída!{% endif %}</p></div>
+{% else %}
+{% set voltar_mesmo = url_for('aba_triagem', pid=proj.id, f=f, sug=sug, q=q, ordem=ordem, i=i if f == 'pendentes' else i + 1) %}
+<div class="card paper">
+  <div class="linha" style="justify-content: space-between; margin-bottom: 8px">
+    <span class="muted small">{{ i + 1 }} de {{ total }} · atual: {{ m.chip(paper.cesta) }}
+      {% if paper.motivo %}<span class="small">({{ paper.motivo }})</span>{% endif %}</span>
+    <span>
+      {% if i > 0 %}<a class="btn" id="ant" href="{{ url_for('aba_triagem', pid=proj.id, f=f, sug=sug, q=q, ordem=ordem, i=i-1) }}">← anterior</a>{% endif %}
+      {% if i + 1 < total %}<a class="btn" id="prox" href="{{ url_for('aba_triagem', pid=proj.id, f=f, sug=sug, q=q, ordem=ordem, i=i+1) }}">próximo →</a>{% endif %}
+    </span>
+  </div>
+  <h1>{{ paper.title }}</h1>
+  <div class="small muted" style="margin-bottom:8px">{{ paper.authors|truncate(220) }}</div>
+  {{ m.meta_paper(paper) }}
+  <div class="abstract">{{ paper.abstract or "(sem abstract)" }}</div>
+  {% if paper.keywords %}<p class="small"><b>Keywords:</b> {{ paper.keywords }}</p>{% endif %}
+
+  <div class="scores">
+    {% for c in CESTAS %}
+      {% set s = paper["score_" ~ c] %}
+      <span class="s {{ 'sug' if paper.cesta_sugerida == c }}">{{ m.chip(c) }}
+        {% if s == s and s is not none %}{{ "%.2f"|format(s) }}{% else %}<span class="muted">não elegível</span>{% endif %}</span>
+    {% endfor %}
+    {% if paper.cesta_sugerida %}<span class="small muted" style="align-self:center">sugestão: <b>{{ LABEL[paper.cesta_sugerida] }}</b></span>{% endif %}
+  </div>
+
+  <form method="post" action="{{ url_for('decidir', pid=proj.id) }}" id="decisao">
+    <input type="hidden" name="key" value="{{ paper.paper_key }}">
+    <input type="hidden" name="voltar" value="{{ voltar_mesmo }}">
+    <div class="acoes">
+      {% for c in CESTAS %}
+      <button name="cesta" value="{{ c }}" class="cesta {{ c }} {{ 'sugerida' if paper.cesta_sugerida == c }}" data-tecla="{{ loop.index }}">{{ LABEL[c] }}<kbd>{{ loop.index }}</kbd></button>
+      {% endfor %}
+      <button name="cesta" value="talvez" data-tecla="t">Talvez<kbd>T</kbd></button>
+      <span style="flex:1"></span>
+      <select name="motivo" id="motivo" onchange="document.getElementById('outro').hidden = this.value !== '__outro'">
+        <option value="">motivo (opcional)</option>
+        {% for mo in cfg.motivos_exclusao %}<option>{{ mo }}</option>{% endfor %}
+        <option value="__outro">Outro…</option>
+      </select>
+      <input type="text" name="outro" id="outro" placeholder="motivo" hidden>
+      <button name="cesta" value="excluido" class="excluir" data-tecla="x">Excluir<kbd>X</kbd></button>
+      {% if paper.cesta != "pendente" %}<button name="cesta" value="pendente" class="link">desfazer</button>{% endif %}
+    </div>
+  </form>
+</div>
+<p class="small muted">Atalhos: <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> cestas · <kbd>T</kbd> talvez · <kbd>X</kbd> excluir · <kbd>←</kbd><kbd>→</kbd> navegar.</p>
+<script>
+  document.addEventListener("keydown", (e) => {
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" && document.getElementById("ant")) location = document.getElementById("ant").href;
+    if (k === "arrowright" && document.getElementById("prox")) location = document.getElementById("prox").href;
+    const b = document.querySelector(`#decisao button[data-tecla="${k}"]`);
+    if (b) { e.preventDefault(); b.click(); }
+  });
+</script>
+{% endif %}
+{% endblock %}

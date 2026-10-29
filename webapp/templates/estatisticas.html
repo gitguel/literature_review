@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "macros.html" as m with context %}
+{% block corpo %}
+{{ m.placar_bar(placar) }}
+<h1>Estatísticas</h1>
+{% set titulos = {
+  "funil": "Funil: do corpus amplo à seleção",
+  "ano": "Publicações por ano (selecionados por cesta)",
+  "citacoes": "Citações dos selecionados, por cesta",
+  "leitura": "Progresso de leitura",
+  "fontes": "Registros por fonte (antes da dedup)",
+  "venues": "Principais venues (corpus único)",
+  "ranks": "Distribuição de rank de venue (corpus único)",
+  "motivos": "Motivos de exclusão",
+} %}
+<div class="grid2">
+  {% for g in graficos %}
+  <div class="card">
+    <h3>{{ titulos[g] }}</h3>
+    <img class="grafico" loading="lazy" alt="{{ titulos[g] }}" src="{{ url_for('grafico', pid=proj.id, nome=g) }}">
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

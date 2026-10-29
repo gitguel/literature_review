@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% import "macros.html" as m with context %}
+{% block corpo %}
+{{ m.placar_bar(placar) }}
+<h1>Snowball</h1>
+<p class="muted">Referências dos artigos selecionados, ordenadas por <b>co-citação</b> (quantos selecionados citam) e depois por citações.
+  Os mais co-citados pelos seus recentes costumam ser justamente os <b>fundacionais</b>.</p>
+
+<div class="card linha" style="justify-content: space-between">
+  <form method="post" class="linha">
+    <input type="hidden" name="acao" value="rodar">
+    <button class="primario">{{ "Atualizar snowball" if meta else "Rodar snowball" }}</button>
+    <label style="margin:0"><input type="checkbox" name="talvez"> incluir os "Talvez" como fonte</label>
+  </form>
+  <span class="small muted">{% if meta %}Última execução: {{ meta[0]|replace("T", " ") }}, a partir de {{ meta[1] }} selecionados.{% else %}Selecione alguns artigos na Triagem primeiro.{% endif %}</span>
+</div>
+
+<form class="filtros" method="get">
+  <select name="mostrar" onchange="this.form.submit()">
+    <option value="novos" {{ "selected" if mostrar == "novos" }}>Só ainda não decididos</option>
+    <option value="todos" {{ "selected" if mostrar == "todos" }}>Todos</option>
+  </select>
+  <label style="margin:0"><input type="checkbox" name="antigos" value="1" {{ "checked" if so_antigos }} onchange="this.form.submit()"> só antigos (candidatos a fundacional)</label>
+  <span class="muted small">{{ n_total }} candidato(s){% if n_total > 300 %}, mostrando 300{% endif %}</span>
+</form>
+
+{% set voltar = request.full_path %}
+<table class="card">
+  <tr><th>Co-cit.</th><th>Artigo</th><th>Ano</th><th>Citações</th><th></th></tr>
+  {% for c in cands %}
+  <tr>
+    <td><b>{{ c.cocitacao }}</b></td>
+    <td>
+      <div>{{ c.title }}</div>
+      <div class="small muted">{{ c.venue }}{% if c.no_corpus %} · <span class="chip sel">já no corpus</span>{% endif %}
+        {% if c.decisao and c.decisao != "pendente" %} · {{ m.chip(c.decisao) }}{% endif %}
+        {% if c.doi %} · <a href="https://doi.org/{{ c.doi }}" target="_blank" rel="noopener">DOI</a>{% endif %}</div>
+      <details><summary class="small muted">citado por</summary><ul class="small">{% for t in c.citado_por.split(" || ") %}<li>{{ t }}</li>{% endfor %}</ul>
+        {% if c.abstract %}<p class="small">{{ c.abstract|truncate(600) }}</p>{% endif %}</details>
+    </td>
+    <td>{{ c.year|ano }}</td>
+    <td>{{ c.citations|num }}</td>
+    <td style="white-space:nowrap">
+      <form method="post" class="inline">
+        <input type="hidden" name="wid" value="{{ c.openalex_id }}"><input type="hidden" name="key" value="{{ c.paper_key }}">
+        <input type="hidden" name="voltar" value="{{ voltar }}"><input type="hidden" name="acao" value="aceitar">
+        <select name="cesta">
+          {% for cs in CESTAS + ["talvez"] %}<option value="{{ cs }}" {{ "selected" if cs == c.sugestao }}>{{ LABEL[cs] }}</option>{% endfor %}
+        </select>
+        <button>Aceitar</button>
+      </form>
+      <form method="post" class="inline">
+        <input type="hidden" name="key" value="{{ c.paper_key }}"><input type="hidden" name="voltar" value="{{ voltar }}">
+        <button name="acao" value="ignorar" class="link perigo">ignorar</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" class="muted">Nenhum candidato.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

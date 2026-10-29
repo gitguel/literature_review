@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ proj.cfg.nome if proj else "Curadoria" }}{% endblock %} · Curadoria</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="marca" href="{{ url_for('inicio') }}">Curadoria</a>
+    {% if proj %}
+    <nav class="abas">
+      <a href="{{ url_for('aba_projeto', pid=proj.id) }}" class="{{ 'ativa' if aba == 'projeto' }}">Projeto</a>
+      <a href="{{ url_for('aba_venues', pid=proj.id) }}" class="{{ 'ativa' if aba == 'venues' }}">Venues</a>
+      <a href="{{ url_for('aba_triagem', pid=proj.id) }}" class="{{ 'ativa' if aba == 'triagem' }}">Triagem</a>
+      <a href="{{ url_for('aba_snowball', pid=proj.id) }}" class="{{ 'ativa' if aba == 'snowball' }}">Snowball</a>
+      <a href="{{ url_for('aba_selecao', pid=proj.id) }}" class="{{ 'ativa' if aba == 'selecao' }}">Seleção</a>
+      <a href="{{ url_for('aba_stats', pid=proj.id) }}" class="direita {{ 'ativa' if aba == 'stats' }}">Estatísticas</a>
+    </nav>
+    {% endif %}
+  </div>
+</header>
+<main>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% if proj %}
+  <div id="tarefa" class="tarefa" hidden></div>
+  <script>
+    (function () {
+      const box = document.getElementById("tarefa");
+      let estavaRodando = false;
+      async function poll() {
+        try {
+          const r = await fetch("{{ url_for('status', pid=proj.id) }}");
+          const j = await r.json();
+          if (j.rodando) {
+            estavaRodando = true;
+            box.hidden = false; box.className = "tarefa";
+            box.textContent = `⏳ ${j.nome}: ${j.msg}`;
+            setTimeout(poll, 1000);
+          } else if (j.erro) {
+            box.hidden = false; box.className = "tarefa erro";
+            box.textContent = `${j.nome} falhou: ${j.erro}`;
+          } else if (estavaRodando) {
+            location.reload();
+          }
+        } catch (e) { setTimeout(poll, 3000); }
+      }
+      poll();
+    })();
+  </script>
+  {% endif %}
+  {% block corpo %}{% endblock %}
+</main>
+</body>
+</html>

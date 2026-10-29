@@ -1,0 +1,152 @@
+@misc{mcmahan2016communication,
+  abstract = {Modern mobile devices have access to a wealth of data suitable for learning models, which in turn can greatly improve the user experience on the device. For example, language models can improve speech recognition and text entry, and image models can automatically select good photos. However, this rich data is often privacy sensitive, large in quantity, or both, which may preclude logging to the data center and training there using conventional approaches. We advocate an alternative that leaves the training data distributed on the mobile devices, and learns a shared model by aggregating locally-computed updates. We term this decentralized approach Federated Learning. We present a practical method for the federated learning of deep networks based on iterative model averaging, and conduct an extensive empirical evaluation, considering five different model architectures and four datasets. These experiments demonstrate the approach is robust to the unbalanced and non-IID data distributions that are a defining characteristic of this setting. Communication costs are the principal constraint, and we show a reduction in required communication rounds by 10-100x as compared to synchronized st},
+  author = {H. Brendan McMahan and Eider Moore and Daniel Ramage and Seth Hampson and Blaise Agüera y Arcas},
+  howpublished = {arXiv (Cornell University)},
+  doi = {10.48550/arxiv.1602.05629},
+  issn = {2331-8422},
+  keywords = {federated learning; decentralized data; deep networks; communication efficiency; non-IID data; mobile devices; privacy-preserving machine learning; communication cost reduction},
+  title = {Communication-Efficient Learning of Deep Networks from Decentralized Data},
+  url = {https://doi.org/10.48550/arxiv.1602.05629},
+  year = {2016}
+}
+
+@misc{tian2018federated,
+  abstract = {Federated Learning is a distributed learning paradigm with two key challenges that differentiate it from traditional distributed optimization: (1) significant variability in terms of the systems characteristics on each device in the network (systems heterogeneity), and (2) non-identically distributed data across the network (statistical heterogeneity). In this work, we introduce a framework, FedProx, to tackle heterogeneity in federated networks. FedProx can be viewed as a generalization and re-parametrization of FedAvg, the current state-of-the-art method for federated learning. While this re-parameterization makes only minor modifications to the method itself, these modifications have important ramifications both in theory and in practice. Theoretically, we provide convergence guarantees for our framework when learning over data from non-identical distributions (statistical heterogeneity), and while adhering to device-level systems constraints by allowing each participating device to perform a variable amount of work (systems heterogeneity). Practically, we demonstrate that FedProx allows for more robust convergence than FedAvg across a suite of realistic federated datasets. In p},
+  author = {Li Tian and Anit Kumar Sahu and Manzil Zaheer and Maziar Sanjabi and Ameet Talwalkar and Virginia Smith},
+  howpublished = {arXiv (Cornell University)},
+  doi = {10.48550/arxiv.1812.06127},
+  issn = {2331-8422},
+  keywords = {federated learning; FedProx; FedAvg; statistical heterogeneity; non-identically distributed data; convergence guarantees; distributed optimization; reparameterization; convergence stability},
+  title = {Federated Optimization in Heterogeneous Networks},
+  url = {https://doi.org/10.48550/arxiv.1812.06127},
+  year = {2018}
+}
+
+@misc{chen2020simple,
+  abstract = {This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tune},
+  author = {Ting Chen and Simon Kornblith and Mohammad Norouzi and Geoffrey E. Hinton},
+  howpublished = {arXiv (Cornell University)},
+  doi = {10.48550/arxiv.2002.05709},
+  issn = {2331-8422},
+  keywords = {contrastive learning; self-supervised learning; visual representation learning; SimCLR; batch size; semi-supervised learning; ImageNet},
+  title = {A Simple Framework for Contrastive Learning of Visual Representations},
+  url = {https://doi.org/10.48550/arxiv.2002.05709},
+  year = {2020}
+}
+
+@inproceedings{he2020momentum,
+  abstract = {We present Momentum Contrast (MoCo) for unsupervised visual representation learning. From a perspective on contrastive learning as dictionary look-up, we build a dynamic dictionary with a queue and a moving-averaged encoder. This enables building a large and consistent dictionary on-the-fly that facilitates contrastive unsupervised learning. MoCo provides competitive results under the common linear protocol on ImageNet classification. More importantly, the representations learned by MoCo transfer well to downstream tasks. MoCo can outperform its supervised pre-training counterpart in 7 detection/segmentation tasks on PASCAL VOC, COCO, and other datasets, sometimes surpassing it by large margins. This suggests that the gap between unsupervised and supervised representation learning has been largely closed in many vision tasks.},
+  author = {Kaiming He and Haoqi Fan and Yuxin Wu and Saining Xie and Ross Girshick},
+  booktitle = {IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings - IEEE Computer Society Conference on Computer Vision and Pattern Recognition/Proceedings},
+  doi = {10.1109/cvpr42600.2020.00975},
+  issn = {1063-6919, 2332-564X, 2575-7075},
+  keywords = {momentum contrast; contrastive learning; dynamic dictionaries; ImageNet classification; transfer learning; object detection; semantic segmentation},
+  title = {Momentum Contrast for Unsupervised Visual Representation Learning},
+  url = {https://doi.org/10.1109/cvpr42600.2020.00975},
+  year = {2020}
+}
+
+@misc{grill2020bootstrap,
+  abstract = {We introduce Bootstrap Your Own Latent (BYOL), a new approach to self-supervised image representation learning. BYOL relies on two neural networks, referred to as online and target networks, that interact and learn from each other. From an augmented view of an image, we train the online network to predict the target network representation of the same image under a different augmented view. At the same time, we update the target network with a slow-moving average of the online network. While state-of-the art methods rely on negative pairs, BYOL achieves a new state of the art without them. BYOL reaches $74.3\%$ top-1 classification accuracy on ImageNet using a linear evaluation with a ResNet-50 architecture and $79.6\%$ with a larger ResNet. We show that BYOL performs on par or better than the current state of the art on both transfer and semi-supervised benchmarks. Our implementation and pretrained models are given on GitHub.},
+  author = {Jean-Bastien Grill and Florian Strub and Florent Altché and Corentin Tallec and Pierre H. Richemond and Elena Buchatskaya and Carl Doersch and Bernardo Ávila Pires and Zhaohan Daniel Guo and Mohammad Gheshlaghi Azar and Bilal Piot and Koray Kavukcuoglu and Rémi Munos and Michal Valko},
+  howpublished = {arXiv (Cornell University)},
+  doi = {10.48550/arxiv.2006.07733},
+  issn = {2331-8422},
+  keywords = {self-supervised learning; image representation learning; image augmentation; transfer learning; semi-supervised learning; ImageNet classification},
+  title = {Bootstrap your own latent: A new approach to self-supervised Learning},
+  url = {https://doi.org/10.48550/arxiv.2006.07733},
+  year = {2020}
+}
+
+@article{ordez2016deep,
+  abstract = {Human activity recognition (HAR) tasks have traditionally been solved using engineered features obtained by heuristic processes. Current research suggests that deep convolutional neural networks are suited to automate feature extraction from raw sensor inputs. However, human activities are made of complex sequences of motor movements, and capturing this temporal dynamics is fundamental for successful HAR. Based on the recent success of recurrent neural networks for time series domains, we propose a generic deep framework for activity recognition based on convolutional and LSTM recurrent units, which: (i) is suitable for multimodal wearable sensors; (ii) can perform sensor fusion naturally; (iii) does not require expert knowledge in designing features; and (iv) explicitly models the temporal dynamics of feature activations. We evaluate our framework on two datasets, one of which has been used in a public activity recognition challenge. Our results show that our framework outperforms competing deep non-recurrent networks on the challenge dataset by 4% on average; outperforming some of the previous reported results by up to 9%. Our results show that the framework can be applied to hom},
+  author = {Francisco Javier Ordóñez and Daniel Roggen},
+  doi = {10.3390/s16010115},
+  issn = {1424-8220},
+  journal = {Sensors},
+  keywords = {human activity recognition; wearable sensors; multimodal sensor fusion; convolutional neural networks; LSTM neural network; temporal dynamics; automatic feature extraction; hyperparameter optimization},
+  title = {Deep Convolutional and LSTM Recurrent Neural Networks for Multimodal Wearable Activity Recognition},
+  url = {https://doi.org/10.3390/s16010115},
+  year = {2016}
+}
+
+@article{kairouz2020advances,
+  abstract = {Federated learning (FL) is a machine learning setting where many clients (e.g., mobile devices or whole organizations) collaboratively train a model under the orchestration of a central server (e.g., service provider), while keeping the training data decentralized. FL embodies the principles of focused data collection and minimization, and can mitigate many of the systemic privacy risks and costs resulting from traditional, centralized machine learning and data science approaches. Motivated by the explosive growth in FL research, this monograph discusses recent advances and presents an extensive collection of open problems and challenges.},
+  author = {Peter Kairouz and H. Brendan McMahan and Brendan Avent and Aurélien Bellet and Mehdi Bennis and Arjun Nitin Bhagoji and Kallista Bonawitz and Zachary Charles and Graham Cormode and Rachel Cummings and Rafael G. L. D’Oliveira and Hubert Eichner and Salim El Rouayheb and David Evans and Joshua Gardner and Zachary Garrett and Adrià Gascón and Badih Ghazi and Phillip B. Gibbons and Marco Gruteser and Zaïd Harchaoui and Chaoyang He and Lie He and Zhouyuan Huo and Ben Hutchinson and Justin Hsu and Martin Jaggi and Tara Javidi and Gauri Joshi and Mikhail Khodak and Jakub Konečný and Aleksandra Korolova and Farinaz Koushanfar and Sanmi Koyejo and Tancrède Lepoint and Yang Liu and Prateek Mittal and Mehryar Mohri and Richard Nock and Ayfer Özgür and Rasmus Pagh and Hang Qi and Daniel Ramage and Ramesh Raskar and Mariana Raykova and Dawn Xiaodong Song and Weikang Song and Sebastian U. Stich and Ziteng Sun and Ananda Theertha Suresh and Florian Tramèr and Praneeth Vepakomma and Jianyu Wang and Li Xiong and Zheng Xu and Qiang Yang and Felix X. Yu and Han Yu and Sen Zhao},
+  doi = {10.1561/2200000083},
+  issn = {1935-8237, 1935-8245},
+  journal = {Foundations and Trends® in Machine Learning},
+  keywords = {federated learning; decentralized data; privacy-preserving machine learning; data minimization; open problems; mobile devices; data collection},
+  title = {Advances and Open Problems in Federated Learning},
+  url = {https://doi.org/10.1561/2200000083},
+  year = {2020}
+}
+
+@article{li2020federated,
+  abstract = {Federated learning involves training statistical models over remote devices or siloed data centers, such as mobile phones or hospitals, while keeping data localized. Training in heterogeneous and potentially massive networks introduces novel challenges that require a fundamental departure from standard approaches for large-scale machine learning, distributed optimization, and privacy-preserving data analysis. In this article, we discuss the unique characteristics and challenges of federated learning, provide a broad overview of current approaches, and outline several directions of future work that are relevant to a wide range of research communities.},
+  author = {Tian Li and Anit Kumar Sahu and Ameet Talwalkar and Virginia Smith},
+  doi = {10.1109/msp.2020.2975749},
+  issn = {1053-5888, 1558-0792},
+  journal = {IEEE Signal Processing Magazine},
+  keywords = {federated learning; data localization; privacy-preserving machine learning; distributed optimization; heterogeneous networks; large-scale machine learning; mobile devices},
+  title = {Federated Learning: Challenges, Methods, and Future Directions},
+  url = {https://doi.org/10.1109/msp.2020.2975749},
+  year = {2020}
+}
+
+@article{wang2018deep,
+  author = {Jindong Wang and Yiqiang Chen and Shuji Hao and Xiaohui Peng and Lisha Hu},
+  doi = {10.1016/j.patrec.2018.02.010},
+  issn = {0167-8655, 1872-7344},
+  journal = {Pattern Recognition Letters},
+  keywords = {sensor-based activity recognition; deep learning; automatic feature extraction; human activity recognition; sensor modalities; unsupervised learning; incremental learning; wearable sensors},
+  title = {Deep learning for sensor-based activity recognition: A survey},
+  url = {https://doi.org/10.1016/j.patrec.2018.02.010},
+  year = {2018}
+}
+
+@article{saeed2019multi,
+  abstract = {Deep learning methods are successfully used in applications pertaining to ubiquitous computing, pervasive intelligence, health, and well-being. Specifically, the area of human activity recognition (HAR) is primarily transformed by the convolutional and recurrent neural networks, thanks to their ability to learn semantic representations directly from raw input. However, in order to extract generalizable features massive amounts of well-curated data are required, which is a notoriously challenging task; hindered by privacy issues and annotation costs. Therefore, unsupervised representation learning (i.e., learning without manually labeling the instances) is of prime importance to leverage the vast amount of unlabeled data produced by smart devices. In this work, we propose a novel self-supervised technique for feature learning from sensory data that does not require access to any form of semantic labels, i.e., activity classes. We learn a multi-task temporal convolutional network to recognize transformations applied on an input signal. By exploiting these transformations, we demonstrate that simple auxiliary tasks of the binary classification result in a strong supervisory signal for},
+  author = {Aaqib Saeed and Tanır Özçelebi and Johan J. Lukkien},
+  doi = {10.1145/3328932},
+  issn = {2474-9567},
+  journal = {Proceedings of the ACM on Interactive Mobile Wearable and Ubiquitous Technologies},
+  keywords = {human activity recognition; self-supervised learning; unsupervised feature learning; multi-task learning; temporal convolutional network; smartphone sensing; semi-supervised learning; transfer learning; unlabeled data},
+  title = {Multi-task Self-Supervised Learning for Human Activity Detection},
+  url = {https://doi.org/10.1145/3328932},
+  year = {2019}
+}
+
+@inproceedings{haresamudram2020masked,
+  abstract = {The ubiquitous availability of wearable sensing devices has rendered large scale collection of movement data a straightforward endeavor. Yet, annotation of these data remains a challenge and as such, publicly available datasets for human activity recognition (HAR) are typically limited in size as well as in variability, which constrains HAR model training and effectiveness. We introduce masked reconstruction as a viable self-supervised pre-training objective for human activity recognition and explore its effectiveness in comparison to state-of-the-art unsupervised learning techniques. In scenarios with small labeled datasets, the pre-training results in improvements over end-to-end learning on two of the four benchmark datasets. This is promising because the pre-training objective can be integrated "as is" into state-of-the-art recognition pipelines to effectively facilitate improved model robustness, and thus, ultimately, leading to better recognition performance.},
+  author = {Harish Haresamudram and Apoorva Beedu and Varun Agrawal and Patrick L. Grady and Irfan A. Essa and Judy Hoffman and Thomas Plötz},
+  booktitle = {International Symposium on Wearable Computers},
+  doi = {10.1145/3410531.3414306},
+  keywords = {human activity recognition; masked reconstruction; self-supervised pre-training; small labeled datasets; model robustness},
+  title = {Masked reconstruction based self-supervision for human activity recognition},
+  url = {https://doi.org/10.1145/3410531.3414306},
+  year = {2020}
+}
+
+@article{yu2021fedhar,
+  abstract = {The advancement of smartphone sensors and wearable devices has enabled a new paradigm for smart human activity recognition (HAR), which has a broad range of applications in healthcare and smart cities. However, there are four challenges,privacy preservation,label scarcity,real-timing, andheterogeneity patterns, to be addressed before HAR can be more applicable in real-world scenarios. To this end, in this paper, we propose a personalized federated HAR framework, namedFedHAR, to overcome all the above obstacles. Specially, as federated learning,FedHARperforms distributed learning, which allows training data to be kept local to protect users’ privacy. Also, for each client without activity labels, inFedHAR, we design an algorithm to compute unsupervised gradients under theconsistency trainingproposition and an unsupervised gradient aggregation strategy is developed for overcoming the concept drift and convergence instability issues in online federated learning process. Finally, extensive experiments are conducted using two diverse real-world HAR datasets to show the advantages ofFedHARover state-of-the-art methods. In addition, when fine-tuning each unlabeled client, personalizedFedH},
+  author = {Hongzheng Yu and Zekai Chen and Xiao Zhang and Xu Chen and Fuzhen Zhuang and Hui Xiong and Xiuzhen Cheng},
+  doi = {10.1109/tmc.2021.3136853},
+  issn = {1536-1233, 1558-0660, 2161-9875},
+  journal = {IEEE Transactions on Mobile Computing},
+  keywords = {federated learning; human activity recognition; personalized federated learning; semi-supervised learning; online learning; consistency regularization; concept drift; privacy preservation; wearable sensors; smartphone sensors; limited labeled data},
+  title = {FedHAR: Semi-Supervised Online Learning for Personalized Federated Human Activity Recognition},
+  url = {https://doi.org/10.1109/tmc.2021.3136853},
+  year = {2021}
+}
+
+@inproceedings{deng2024self,
+  abstract = {Personalized Human Activity Recognition (PHAR) based on wearable sensors is crucial in the medical, sports, industrial and other fields. PHAR faces challenges of privacy leakage and a shortage of labeled data. Therefore, we propose a framework called self-supervised federated learning for personalized human activity recognition (SSF-HAR) to implement private PHAR. To protect user privacy, our framework integrates federated learning (FL) to achieve the transmission of only model parameters between the cloud and clients, rather than user data. Besides, we propose a strategy of weighted aggregation to update the cloud model with the client models. To overcome the lack of labeled data, our framework introduces self-supervised learning (SSL) tasks to pretrain a feature extractor in the cloud. The proxy task of SSL transforms data and provides pseudo-labels in three forms. We test the performance on the benchmark datasets MotionSense and WIDSM. The experiments show that SSF-HAR outperforms other FL frameworks for PHAR.},
+  author = {Shizhuo Deng and Da Teng and Zhubao Guo and Jiaqi Chen and Dongyue Chen and Tong Jia and Hao Wang},
+  booktitle = {IEEE International Conference on Multimedia and Expo (ICME)},
+  doi = {10.1109/icme57554.2024.10687970},
+  keywords = {federated learning; self-supervised learning; wearable sensors; privacy preservation; weighted aggregation; pseudo-labeling; data scarcity},
+  title = {Self-Supervised Federated Learning for Personalized Human Activity Recognition},
+  url = {https://doi.org/10.1109/icme57554.2024.10687970},
+  year = {2024}
+}

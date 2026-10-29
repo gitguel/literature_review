@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Projetos{% endblock %}
+{% block corpo %}
+<h1>Projetos de curadoria</h1>
+<div class="grid2">
+  <div class="card">
+    <h3>Abrir</h3>
+    {% if projetos %}
+    <table>
+      {% for p in projetos %}
+      <tr><td><a href="{{ url_for('aba_projeto', pid=p.id) }}">{{ p.cfg.nome }}</a></td>
+          <td class="muted small">{{ p.cfg.pergunta|truncate(90) }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Nenhum projeto ainda.</p>{% endif %}
+  </div>
+  <div class="card">
+    <h3>Novo projeto</h3>
+    <form method="post" action="{{ url_for('novo') }}">
+      <label>Nome</label><input type="text" name="nome" required style="width:100%">
+      <label>Pergunta / objetivo</label><textarea name="pergunta" rows="3"></textarea>
+      <p><button class="primario">Criar</button></p>
+    </form>
+  </div>
+</div>
+{% endblock %}

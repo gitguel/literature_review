@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block corpo %}
+<h1>Venues</h1>
+<p class="muted">Venues sem rank automático (CORE/SJR). O rank manual vale para todos os papers da venue e dá bônus na cesta "Recentes".</p>
+
+{% macro form_rank(v, atual="") %}
+<form class="inline" method="post">
+  <input type="hidden" name="tipo" value="venue"><input type="hidden" name="venue" value="{{ v.venue }}">
+  <input type="hidden" name="ancora" value="venues">
+  <select name="rank" onchange="this.form.submit()">
+    <option value="" {{ "selected" if not atual }}>—</option>
+    {% for r in ranks %}<option value="{{ r }}" {{ "selected" if atual == r }}>{{ r }}</option>{% endfor %}
+    <option value="sem_rank" {{ "selected" if atual == "sem_rank" }}>sem rank</option>
+  </select>
+</form>
+{% endmacro %}
+
+<div class="card" id="venues">
+  <h3>Sem rank ({{ sem_rank|length }})</h3>
+  {% if sem_rank %}
+  <table>
+    <tr><th>Venue</th><th>Papers</th><th>Selecionados</th><th>Rank manual</th></tr>
+    {% for v in sem_rank %}
+    <tr><td>{{ v.venue }}</td><td>{{ v.n }}</td><td>{{ v.sel or "" }}</td><td>{{ form_rank(v) }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">Nada pendente.</p>{% endif %}
+</div>
+
+{% if manuais %}
+<div class="card">
+  <h3>Com rank manual ({{ manuais|length }})</h3>
+  <table>
+    {% for v in manuais %}<tr><td>{{ v.venue }}</td><td>{{ v.n }}</td><td>{{ form_rank(v, v.manual) }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+
+<h2 id="recuperacao">Propostas de recuperação de rank</h2>
+<p class="muted small">A cópia canônica ficou sem rank, mas uma duplicata dela tem. Nada é aplicado sem você aceitar.</p>
+{% for p in propostas %}
+<div class="card">
+  <h3>{{ p.title }}</h3>
+  <p class="small">Canônica: <b>{{ p.venue_canonica or "—" }}</b> · Duplicata: <b>{{ p.venue_duplicata }}</b> → rank <b>{{ p.rank_proposto }}</b></p>
+  <details><summary class="small">abstract</summary><p class="small">{{ p.abstract }}</p></details>
+  <form method="post" class="acoes">
+    <input type="hidden" name="tipo" value="recuperacao"><input type="hidden" name="key" value="{{ p.key }}">
+    <input type="hidden" name="rank" value="{{ p.rank_proposto }}"><input type="hidden" name="ancora" value="recuperacao">
+    <button name="acao" value="aceitar" class="primario">Aceitar {{ p.rank_proposto }}</button>
+    <button name="acao" value="rejeitar">Rejeitar</button>
+  </form>
+</div>
+{% else %}<p class="muted">Nenhuma proposta pendente.</p>{% endfor %}
+{% endblock %}

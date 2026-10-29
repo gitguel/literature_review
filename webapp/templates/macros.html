@@ -1,0 +1,27 @@
+{% macro chip(cesta) -%}
+<span class="chip {{ cesta }}">{{ LABEL.get(cesta, cesta) }}</span>
+{%- endmacro %}
+
+{% macro placar_bar(placar) -%}
+<div class="placar">
+  {% for p in placar %}
+  <div class="item {{ p.estado }}" title="{% if p.estado == 'acima' %}Acima da cota: tudo bem, o corte final é na Seleção{% endif %}">
+    <span class="chip {{ p.cesta }}">{{ p.label }}</span>
+    <b>{{ p.n }}{% if p.cota is not none %}/{{ p.cota }}{% endif %}</b>
+  </div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro meta_paper(p) -%}
+<div class="meta">
+  <span><b>{{ p.year|ano }}</b></span>
+  <span>{{ p.venue or "venue desconhecida" }}{% if p.venue_rank_final %} · <b>{{ p.venue_rank_final }}</b>{% endif %}</span>
+  <span><b>{{ p.citations|num }}</b> citações</span>
+  <span><b>{{ p.cit_ano|num }}</b>/ano</span>
+  {% if p.cocitacao %}<span>citado por <b>{{ p.cocitacao }}</b> selecionado(s)</span>{% endif %}
+  <span class="muted">{{ p.origem }}{% if p.dup_group_size and p.dup_group_size|int > 1 %} · {{ p.dup_group_size|int }} cópias{% endif %}</span>
+  {% if p.doi %}<a href="https://doi.org/{{ p.doi }}" target="_blank" rel="noopener">DOI</a>
+  {% elif p.url %}<a href="{{ p.url }}" target="_blank" rel="noopener">link</a>{% endif %}
+</div>
+{%- endmacro %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block corpo %}
+<h1>{{ cfg.nome }}</h1>
+{% if cfg.pergunta %}<p class="muted">{{ cfg.pergunta }}</p>{% endif %}
+
+<div class="card">
+  <div class="linha" style="justify-content: space-between">
+    <div>
+      {% if cont %}
+      <b>{{ cont.coletados }}</b> registros coletados · <b>{{ cont.unicos }}</b> únicos ·
+      <b>{{ cont.enriquecidos }}</b> com dados do OpenAlex
+      <span class="muted small">(processado em {{ cont.gerado_em|replace("T", " ") }})</span>
+      {% else %}<span class="muted">Ainda não processado. Adicione consultas ou envie .bib.</span>{% endif %}
+    </div>
+    <form method="post" action="{{ url_for('rota_reprocessar', pid=proj.id) }}"><button class="primario">Reprocessar</button></form>
+  </div>
+  {% if not tem_chave %}
+  <p class="small muted" style="margin-bottom:0">Sem chave do OpenAlex: o orçamento diário gratuito é pequeno e compartilhado pelo seu IP
+    (cerca de 100 buscas; lotes por DOI custam 10× menos). Para mais folga, crie uma chave gratuita em
+    <a href="https://openalex.org/settings/api" target="_blank" rel="noopener">openalex.org/settings/api</a>
+    e rode com <code>OPENALEX_API_KEY=… python run.py</code>.</p>
+  {% endif %}
+</div>
+
+<h2>Buscas no OpenAlex</h2>
+<div class="card">
+  <p class="small muted" style="margin-top:0">Busca booleana em título + abstract. Use várias consultas complementares para ter um corpus amplo
+    (ex.: <code>"federated learning" AND ("self-supervised" OR contrastive)</code>, <code>"federated" AND "activity recognition"</code>,
+    <code>"self-supervised" AND "activity recognition"</code>, <code>survey AND "federated learning"</code>). Cada consulta vira uma fonte.</p>
+  {% if cfg.consultas %}
+  <table>
+    <tr><th>Consulta</th><th>Anos</th><th>Máx.</th><th>Resultados</th><th>Última execução</th><th></th></tr>
+    {% for q in cfg.consultas %}
+    <tr>
+      <td><code>{{ q.query }}</code><div class="small muted">fonte: openalex_{{ q.id }}</div></td>
+      <td>{{ q.year_from or "…" }}–{{ q.year_to or "…" }}</td>
+      <td>{{ q.max_results }}</td>
+      <td>{{ q.n_resultados if q.n_resultados is not none else "—" }}</td>
+      <td class="small">{{ (q.ultima_execucao or "nunca")|replace("T", " ") }}</td>
+      <td style="white-space:nowrap">
+        <form class="inline" method="post" action="{{ url_for('consulta', pid=proj.id) }}">
+          <input type="hidden" name="cid" value="{{ q.id }}">
+          <button name="acao" value="rodar">{{ "Rodar de novo" if q.ultima_execucao else "Rodar" }}</button>
+          <button name="acao" value="remover" class="perigo" onclick="return confirm('Remover a consulta e o .bib gerado? As decisões ficam salvas.')">Remover</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+  <form method="post" action="{{ url_for('consulta', pid=proj.id) }}" class="linha" style="margin-top:12px">
+    <input type="hidden" name="acao" value="adicionar">
+    <div style="flex:1; min-width:280px"><label>Nova consulta</label><input type="text" name="query" style="width:100%" placeholder='"federated learning" AND "self-supervised"'></div>
+    <div><label>De (ano)</label><input type="number" name="year_from" style="width:90px"></div>
+    <div><label>Até (ano)</label><input type="number" name="year_to" style="width:90px"></div>
+    <div><label>Máx. resultados</label><input type="number" name="max_results" value="200" style="width:100px"></div>
+    <button>Adicionar</button>
+  </form>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Arquivos .bib</h3>
+    {% if bibs %}
+    <table>
+      {% for b in bibs %}
+      <tr><td>{{ b.nome }}</td><td class="muted">{{ b.origem }}</td><td>{{ b.n }}</td>
+        <td>{% if b.origem == "bib" %}
+          <form class="inline" method="post" action="{{ url_for('remover_arquivo', pid=proj.id) }}">
+            <input type="hidden" name="nome" value="{{ b.nome }}">
+            <button class="link perigo" onclick="return confirm('Remover {{ b.nome }}? Vai para lixeira/.')">remover</button>
+          </form>{% endif %}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Nenhum ainda.</p>{% endif %}
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('upload', pid=proj.id) }}" class="linha" style="margin-top:12px">
+      <input type="hidden" name="tipo" value="bib">
+      <input type="file" name="arquivo" accept=".bib" multiple>
+      <button>Enviar .bib</button>
+    </form>
+    <p class="small muted">Exportações do Scopus, IEEE, ACM, WoS… O nome do arquivo vira a fonte.</p>
+  </div>
+  <div class="card">
+    <h3>Tabelas de ranking (opcional)</h3>
+    {% for tipo, tem, desc in [("core", core, "CORE (conferências): CSV do portal.core.edu.au"), ("sjr", sjr, "SCImago/SJR (periódicos): CSV de scimagojr.com")] %}
+    <div style="margin-bottom:12px">
+      <b>{{ tipo|upper }}</b> {% if tem %}<span class="chip sel">carregada</span>{% else %}<span class="muted small">não enviada</span>{% endif %}
+      <div class="small muted">{{ desc }}</div>
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('upload', pid=proj.id) }}" class="linha">
+        <input type="hidden" name="tipo" value="{{ tipo }}">
+        <input type="file" name="arquivo" accept=".csv">
+        <button>Enviar</button>
+      </form>
+      {% if tem %}
+      <form class="inline" method="post" action="{{ url_for('remover_arquivo', pid=proj.id) }}">
+        <input type="hidden" name="nome" value="{{ tipo }}.csv"><button class="link perigo">remover</button>
+      </form>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<h2>Configurações</h2>
+<form class="card" method="post">
+  <div class="grid2">
+    <div>
+      <label>Nome</label><input type="text" name="nome" value="{{ cfg.nome }}" style="width:100%">
+      <label>Pergunta / objetivo</label><textarea name="pergunta" rows="3">{{ cfg.pergunta }}</textarea>
+      <label>Motivos de exclusão (um por linha; sempre há também "Outro")</label>
+      <textarea name="motivos" rows="5">{{ cfg.motivos_exclusao|join("\n") }}</textarea>
+    </div>
+    <div>
+      <label>Cotas da seleção final (orientam, não bloqueiam)</label>
+      <div class="linha">
+        {% for c in CESTAS %}
+        <div><span class="chip {{ c }}">{{ LABEL[c] }}</span><br>
+          <input type="number" name="cota_{{ c }}" value="{{ cfg.cotas[c] }}" min="0" style="width:90px"></div>
+        {% endfor %}
+      </div>
+      <label>"Recente" = até quantos anos de idade</label>
+      <input type="number" name="anos_recente" value="{{ cfg.anos_recente }}" min="0">
+      <label>"Fundacional" = pelo menos quantos anos de idade</label>
+      <input type="number" name="idade_min_fundacional" value="{{ cfg.idade_min_fundacional }}" min="0">
+      <label>Ano de referência (vazio = ano atual)</label>
+      <input type="number" name="ano_referencia" value="{{ cfg.ano_referencia or '' }}">
+      <label><input type="checkbox" name="enriquecer" {{ "checked" if cfg.enriquecer }}> Enriquecer via OpenAlex ao reprocessar (citações, abstract, referências)</label>
+    </div>
+  </div>
+  <p><button class="primario">Salvar</button></p>
+</form>
+{% endblock %}

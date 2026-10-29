@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "macros.html" as m with context %}
+{% block corpo %}
+{{ m.placar_bar(placar) }}
+<div class="linha" style="justify-content: space-between; margin-bottom: 12px">
+  <form class="filtros" method="get" style="margin:0">
+    {% for k, v in [("todos", "Todos"), ("a_ler", "A ler"), ("lidos", "Lidos")] %}
+    <label style="margin:0"><input type="radio" name="lido" value="{{ k }}" {{ "checked" if filtro == k }} onchange="this.form.submit()"> {{ v }}</label>
+    {% endfor %}
+  </form>
+  <div>
+    Exportar:
+    <a class="btn" href="{{ url_for('exportar', pid=proj.id, fmt='bib') }}">BibTeX</a>
+    <a class="btn" href="{{ url_for('exportar', pid=proj.id, fmt='csv') }}">CSV</a>
+  </div>
+</div>
+
+{% macro item(p, cesta) %}
+<div class="item-sel {{ 'lido' if p.lido }}">
+  <div class="titulo">{% if p.doi %}<a href="https://doi.org/{{ p.doi }}" target="_blank" rel="noopener" style="color:inherit">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</div>
+  <div class="small muted">{{ p.year|ano }} · {{ p.venue|truncate(50) }}{% if p.venue_rank_final %} · <b>{{ p.venue_rank_final }}</b>{% endif %} · {{ p.citations|num }} cit. · {{ p.origem }}</div>
+  <div class="ctrl">
+    <form method="post" class="inline">
+      <input type="hidden" name="key" value="{{ p.paper_key }}"><input type="hidden" name="filtro" value="{{ filtro }}">
+      <input type="hidden" name="acao" value="lido"><input type="hidden" name="valor" value="{{ '0' if p.lido else '1' }}">
+      <label style="margin:0; display:inline"><input type="checkbox" {{ "checked" if p.lido }} onchange="this.form.submit()"> lido</label>
+    </form>
+    {% if cesta != "talvez" %}
+    <form method="post" class="inline">
+      <input type="hidden" name="key" value="{{ p.paper_key }}"><input type="hidden" name="filtro" value="{{ filtro }}">
+      <button name="acao" value="subir" title="subir">↑</button><button name="acao" value="descer" title="descer">↓</button>
+    </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('decidir', pid=proj.id) }}" class="inline">
+      <input type="hidden" name="key" value="{{ p.paper_key }}">
+      <input type="hidden" name="voltar" value="{{ url_for('aba_selecao', pid=proj.id, lido=filtro) }}">
+      <select name="cesta" onchange="this.form.submit()" title="mover">
+        <option value="" selected disabled>mover…</option>
+        {% for c in CESTAS + ["talvez"] %}{% if c != cesta %}<option value="{{ c }}">{{ LABEL[c] }}</option>{% endif %}{% endfor %}
+        <option value="pendente">voltar à triagem</option>
+        <option value="excluido">excluir</option>
+      </select>
+    </form>
+  </div>
+</div>
+{% endmacro %}
+
+<div class="colunas">
+  {% for c in CESTAS %}
+  <div class="coluna {{ c }}">
+    <div class="linha" style="justify-content: space-between">
+      <h3>{{ LABEL[c] }}</h3>
+      <a class="small" href="{{ url_for('exportar', pid=proj.id, fmt='bib', cesta=c) }}">.bib</a>
+    </div>
+    {% for p in colunas[c] %}{{ item(p, c) }}{% else %}<p class="muted small">Vazio.</p>{% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<h2>Talvez (reserva)</h2>
+<div class="coluna talvez">
+  {% for p in colunas["talvez"] %}{{ item(p, "talvez") }}{% else %}<p class="muted small">Nenhum artigo em "Talvez".</p>{% endfor %}
+</div>
+{% endblock %}
